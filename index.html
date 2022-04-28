@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+  <script src="http://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <title>dashboard</title>
+</head>
+<style>
+   .container{
+    width: 400px;
+    height: 300px;
+    display: flex;
+  }
+  .container2{
+    width: 400px;
+    height: 300px;
+    display: flex;
+  }
+  h1{
+    color: blue;
+    text-shadow: 100px;
+    text-align: center;
+  }
+  h2{
+    color: aqua;
+  }
+</style>
+<body>
+  <h1>Solar Eclipse Dashboard</h1>
+  <div class="container">
+    <h2>EclipseType</h2>
+    <canvas id="barchart">
+    </canvas>
+    <h2>SunAltitude VS SunAzimuth</h2>
+    <canvas id="piechart">
+    </canvas>
+    <div id="container2">
+    <h2>LineChart: Longitude Vs Latitude</h2>
+    <canvas id="linechart"></canvas>
+    <h2>Area Chart Gamma & DeltaTs</h2>
+    <canvas id="areachart"></canvas>
+    </div>
+  </div>
+  <h2>GeoChart: Solar Elipse of Few Country</h2>
+  <div id="regions_div" style="width: 600px; height: 500px;">
+    
+  </div>
+  <script>
+    d3.csv('bar sun.csv').then(function (datapoints) {
+      console.log(datapoints)
+      const SunAltitude = [];
+      const sunazimuth = [];
+      for (i = 0; i < 100; i++) {
+        SunAltitude.push(datapoints[i].SunAltitude);
+        sunazimuth.push(datapoints[i].SunAzimuth);
+      }
+      const data = {
+        labels: sunazimuth,
+        datasets: [{
+          label: 'SunAltitude VS SunAzimuth',
+          data: SunAltitude,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(201, 203, 207, 0.2)'
+          ],
+
+          borderWidth: 1
+        }]
+      };
+      // </block:setup>
+
+      // <block:config:0>
+      let config = {
+        type: 'bar',
+        data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        },
+      };
+      const mychart = new Chart(
+        document.getElementById('barchart'),
+        config
+      );
+
+    });
+    // piechart
+
+    d3.csv('pie.csv').then(function (datapoints) {
+      console.log(datapoints)
+      const EclipseType = [];
+      const Times = [];
+      for (i = 0; i < datapoints.length; i++) {
+        EclipseType.push(datapoints[i].EclipseType);
+        Times.push(datapoints[i].Times);
+      }
+
+
+
+var ctx =document.getElementById('piechart').getContext('2d');
+   var chart=new Chart(ctx,
+   {
+     type:'pie',
+     data:{
+      //  labels:['Red','Blue','Yellow','Green','Purple','Orange'],
+      labels:EclipseType,
+       datasets:[{
+        //  label:'for vote',
+         data:Times,
+         backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+            'rgba(255, 205, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(201, 203, 20, 0.2)',
+            'rgba(21, 3, 7, 0.2)',
+            'rgba(1, 23, 27, 0.2)',
+            'rgba(100, 203, 97, 0.2)',
+          ],
+         borderWidth:1
+       }]
+     }
+   })
+  })
+
+  // line chart
+  d3.csv('line.csv').then(function (datapoints) {
+      console.log(datapoints)
+      const Longitude = [];
+      const Latitude = [];
+      for (i = 0; i < datapoints.length; i++) {
+        Longitude.push(datapoints[i].Longitude);
+        Latitude.push(datapoints[i].Latitude);
+      }
+
+  var ctx =document.getElementById('linechart').getContext('2d');
+   var chart=new Chart(ctx,
+   {
+     type:'line',
+     data:{
+      //  labels:['Red','Blue','Yellow','Green','Purple','Orange'],
+      labels:Longitude,
+       datasets:[{
+         label:'Longitude Value',
+         data:Latitude,
+         borderColor: 'rgb(75, 192, 192)'
+       }]
+     }
+   })
+  })
+  // Area Chart
+  d3.csv('area.csv').then(function (datapoints) {
+      console.log(datapoints)
+      const DeltaTs = [];
+      const Gamma = [];
+      for (i = 0; i < datapoints.length; i++) {
+        DeltaTs.push(datapoints[i].DeltaTs);
+        Gamma.push(datapoints[i].Gamma);
+      }
+
+  var ctx =document.getElementById('areachart').getContext('2d');
+   var chart=new Chart(ctx,
+   {
+     type:'line',
+     data:{
+      //  labels:['Red','Blue','Yellow','Green','Purple','Orange'],
+      labels:DeltaTs,
+       datasets:[{
+         label:'Gamma Value',
+         data:Gamma,
+         borderColor: 'rgb(75, 192, 192)'
+       }]
+     }
+   })
+  })
+
+// geo chart
+google.charts.load('current', {
+        'packages':['geochart'],
+      });
+      google.charts.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+        var data = google.visualization.arrayToDataTable([
+          ['Country', 'TotalEclipse(2001-2030)'],
+          ['Germany', 35],
+          ['United States', 53],
+          ['Brazil', 54],
+          ['Canada', 38],
+          ['France', 46],
+          ['RU', 56],
+          ['India',57]
+        ]);
+
+        var options = {};
+
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+        chart.draw(data, options);
+      }
+
+  </script>
+</body>
+
+</html>
